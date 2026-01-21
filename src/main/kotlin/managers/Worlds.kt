@@ -12,97 +12,51 @@ import registers.WorldRegistry
 import java.util.UUID
 
 object Worlds {
-    fun create(role: ServerRole): InstanceContainer {
-        val instanceManager = MinecraftServer.getInstanceManager()
+    fun createRegistry(role: ServerRole): WorldRegistry {
+        val im = MinecraftServer.getInstanceManager()
+        val instances = mutableMapOf<String, InstanceContainer>()
 
-        val instance: InstanceContainer = instanceManager.createInstanceContainer()
-
-        // Persist and load world data
-        instance.chunkLoader = AnvilLoader(
-            when (role) {
-                ServerRole.LOBBY -> "worlds/lobby"
-                ServerRole.RPG_LOBBY -> "worlds/rpglobby"
-                ServerRole.RPG_INSTANCE -> "worlds/rpg_instance"
+        // This is where we actually trigger the creation/generation
+        when (role) {
+            ServerRole.LOBBY -> {
+                instances["lobby"] = createInstance(im, "worlds/lobby")
             }
-        )
+            ServerRole.RPG_LOBBY -> {
+                instances["rpg_lobby"] = createInstance(im, "worlds/rpglobby")
+            }
+            ServerRole.RPG_INSTANCE -> {
+                instances["rpg_instance"] = createInstance(im, "worlds/rpg_instance")
+            }
+        }
+
+        return WorldRegistry(role, instances, ::createRPGWorld)
+    }
+
+    private fun createInstance(im: InstanceManager, path: String): InstanceContainer {
+        val instance = im.createInstanceContainer()
+
+        // Get the absolute path to see where Docker thinks it is
+        val absolutePath = java.io.File(path).absolutePath
+        println("Initializing instance at: $absolutePath")
+
+        instance.chunkLoader = AnvilLoader(path)
 
         instance.setChunkSupplier { inst, x, z -> LightingChunk(inst, x, z) }
 
-        return instance
-
-    }
-
-
-
-    /*fun createRegistry(): WorldRegistry {
-        val im = MinecraftServer.getInstanceManager()
-
-        val mainLobby = im.createInstanceContainer().apply {
-            setGenerator { unit ->
-                unit.modifier().fillHeight(0,40, Block.GRASS_BLOCK)
+        // FORCE GENERATION: Load the spawn chunks immediately
+        // This will trigger the generator and save the files to your folder
+        for (x in -2..2) {
+            for (z in -2..2) {
+                instance.loadChunk(x, z)
             }
-            setTag(InstanceMeta.TYPE, InstanceType.MAIN_LOBBY.name)
         }
-        val rpgLobby = im.createInstanceContainer().apply {
-            setGenerator { unit ->
-                unit.modifier().fillHeight(0,40, Block.STONE)
-            }
-            setTag(InstanceMeta.TYPE, InstanceType.RPG_LOBBY.name)
-        }
-        // Registry gets a function that can create RPG worlds
-        return WorldRegistry(
-            mainLobby = mainLobby,
-            rpgLobby = rpgLobby,
-            rpgWorldFactory = ::createRPGWorld
-        )
-    }
 
-    fun createRPGWorld(owner: UUID): InstanceContainer {
-        val im = MinecraftServer.getInstanceManager()
-        val instance = im.createInstanceContainer()
-
-        instance.setTag(InstanceMeta.TYPE, InstanceType.RPG_WORLD.name)
-        instance.setTag(InstanceMeta.OWNER, owner)
-
-        // Placeholder generation
-        instance.setGenerator { unit ->
-            unit.modifier().fillHeight(0,40, Block.PODZOL)
-        }
         return instance
     }
 
-    data class WorldBundle(
-        val mainLobby: InstanceContainer,
-        val rpgLobby: InstanceContainer,
-        val rpgWorld: InstanceContainer
-    )
-
-    fun createAll(): WorldBundle {
-        val im = MinecraftServer.getInstanceManager()
-
-        val mainLobby = im.createInstanceContainer().apply {
-            setGenerator { unit ->
-                // Flat lobby for now
-                unit.modifier().fillHeight(0,40, Block.GRASS_BLOCK)
-            }
-        }
-        val rpgLobby = im.createInstanceContainer().apply {
-            setGenerator { unit ->
-                unit.modifier().fillHeight(0,40, Block.STONE)
-            }
-        }
-
-        val rpgWorld = im.createInstanceContainer().apply {
-            setGenerator { unit ->
-                unit.modifier().fillHeight(0,40, Block.PODZOL)
-            }
-        }
-
-        return WorldBundle(
-            mainLobby = mainLobby,
-            rpgLobby = rpgLobby,
-            rpgWorld = rpgWorld
-        )
-    }*/
-
+    private fun createRPGWorld(owner: UUID): InstanceContainer {
+        // ... implementation for dynamic instance creation ...
+        return MinecraftServer.getInstanceManager().createInstanceContainer()
+    }
 }
+

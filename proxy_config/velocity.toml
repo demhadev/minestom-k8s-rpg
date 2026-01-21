@@ -1,0 +1,19 @@
+config-version = "2.7"
+bind = "0.0.0.0:25577"
+motd = "A Minestom Cluster"
+show-max-players = 500
+online-mode = false
+prevent-client-proxy-connections = false
+
+[servers]
+lobby = "lobby:25565"
+rpg_lobby = "rpg-lobby:25565"
+
+[main]
+try = ["lobby"]
+
+[player-info-forwarding]
+mode = "modern"
+# REMOVE THE SECRET LINE FROM HERE!
+
+[forced-hosts]

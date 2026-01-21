@@ -1,0 +1,38 @@
+services:
+  proxy:
+    build:
+      context: .
+      dockerfile: proxy.Dockerfile
+    ports:
+      - "25577:25577"
+    networks:
+      - minestom-net
+    depends_on:
+      - lobby
+    environment:
+      - JVM_OPTS=-Djava.net.preferIPv4Stack=true
+
+  lobby:
+    build: .
+    environment:
+      - ROLE=LOBBY
+      - SERVER_PORT=25565
+      - VELOCITY_SECRET=testing123
+    volumes:
+      - ./worlds/lobby:/app/worlds/lobby
+    networks:
+      - minestom-net
+
+  rpg-lobby:
+    build: .
+    environment:
+      - ROLE=RPG_LOBBY
+      - SERVER_PORT=25565
+      - VELOCITY_SECRET=your_super_secret_key_123
+    volumes:
+      - ./worlds/rpglobby:/app/worlds/rpglobby
+    networks:
+      - minestom-net
+networks:
+  minestom-net:
+    driver: bridge
