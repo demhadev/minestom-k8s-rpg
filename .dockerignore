@@ -1,0 +1,9 @@
+.gradle
+.idea
+build
+out
+*.iml
+# Ignore build outputs EXCEPT the jar we want to copy
+build/*
+!build/libs/
+!build/libs/*.jar
