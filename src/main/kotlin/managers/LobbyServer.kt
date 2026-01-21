@@ -4,6 +4,7 @@ import commands.GamemodeCommand
 import net.minestom.server.Auth
 import net.minestom.server.MinecraftServer
 import net.minestom.server.event.player.AsyncPlayerConfigurationEvent
+import kotlin.jvm.java
 
 class LobbyServer(private val role: ServerRole) {
     fun start() {
@@ -23,6 +24,7 @@ class LobbyServer(private val role: ServerRole) {
         eventHandler.addListener(AsyncPlayerConfigurationEvent::class.java) { event ->
             val player = event.player
             println("Player ${player.username} is joining the $role...")
+            println("!!! CONNECTION ATTEMPT: ${event.player.username} is pre-logging in")
 
             // YOU MUST SET THE INSTANCE HERE
             event.spawningInstance = instance
