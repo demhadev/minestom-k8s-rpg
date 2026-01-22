@@ -11,7 +11,7 @@ class LobbyServer(private val role: ServerRole) {
         System.setProperty("minestom.proxy", "velocity")
         System.setProperty("minestom.velocity.secret", velocitySecret)
         System.setProperty("minestom.unsupported.protocol-check", "true")
-
+        // just for commit lol
         // 2. This IS the correct way for your specific version
         val minecraftServer = MinecraftServer.init(Auth.Velocity(velocitySecret))
 
