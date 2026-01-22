@@ -24,4 +24,4 @@ RUN echo 'config-version = "2.7"' > velocity.toml && \
 RUN echo "testing123" > forwarding.secret
 
 # Start Velocity
-ENTRYPOINT ["java", "-Xmx512M", "-Xms512M", "-jar", "velocity.jar"]
+ENTRYPOINT ["java", "-Xmx512M", "-Xms512M", "-Djava.net.preferIPv4Stack=true", "-jar", "velocity.jar"]

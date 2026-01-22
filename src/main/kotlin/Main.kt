@@ -2,7 +2,10 @@ import managers.LobbyServer
 import managers.ServerRole
 
 fun main() {
-    // LobbyServer().start()
+    // 1. Force these BEFORE any other Minestom classes load
+    System.setProperty("minestom.unsupported.protocol-check", "true")
+    System.setProperty("java.net.preferIPv4Stack", "true")
+
     val role = ServerRole.fromEnv()
     println("Starting ${role} server...")
 
